@@ -15,6 +15,10 @@ on:
     branches:
       - main
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   versioning:
     if: |
@@ -22,6 +26,7 @@ jobs:
       (startsWith(github.head_ref, 'release/') || startsWith(github.head_ref, 'hotfix/'))
     permissions:
       contents: read
+
     name: Extract Release Version
     runs-on: ubuntu-latest
     outputs:
@@ -62,12 +67,13 @@ jobs:
   generate-sbom:
     permissions:
       contents: read
+
     name: Generate SPDX SBOM
     runs-on: ubuntu-latest
     needs: [versioning]
     steps:
       - name: Checkout Code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Generate SPDX SBOM
         env:
@@ -93,12 +99,13 @@ jobs:
   create-git-tag:
     permissions:
       contents: write
+
     name: Create Git Tag
     needs: [versioning, generate-sbom]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
 
@@ -117,6 +124,7 @@ jobs:
   create-git-release:
     permissions:
       contents: write
+
     name: Create GitHub Release
     needs: [versioning, generate-sbom, create-git-tag]
     runs-on: ubuntu-latest
@@ -136,4 +144,3 @@ jobs:
           prerelease: false
           files: |
             sbom.spdx.json
-
