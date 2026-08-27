@@ -31,6 +31,12 @@ This project follows **Semantic Versioning (SemVer)** ([semver.org](https://semv
 
 ---
 
+## [0.90.1] – 2026-08-12
+
+### Changed
+
+- Updated GitHub Actions to latest versions.
+
 ## [0.90.0] – 2026-02-20
 
 ### Initial Public Release (Pre-Stable) 
